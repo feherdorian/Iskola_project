@@ -1,22 +1,31 @@
 <template>
-  <div>
-    <h2>Diákok osztálynévsora</h2>
+  <div class="kartyak-view">
+    <h2>Kártyák nézete</h2>
 
-    <!-- Cards komponens, amely a táblázatot jeleníti meg -->
-    <Cards :cards="paginatedRows" @card-clicked="openModal" />
-
-    <!-- Paginator -->
-    <Paginator 
-      :totalItems="rows.length" 
-      :itemsPerPage="itemsPerPage" 
-      :currentPage="currentPage" 
-      @page-changed="updatePage"
+    <!-- Search bar for filtering cards -->
+    <input
+      v-model="searchTerm"
+      type="text"
+      placeholder="Keresés..."
+      class="search-bar"
     />
 
-    <!-- Modális ablak a kiválasztott diák adataihoz -->
-    <div v-if="showModal" class="modal-overlay" @click="closeModal">
-      <div class="modal-content" @click.stop>
-        <h3>{{ selectedCard.nev }}</h3>
+    <!-- Display cards -->
+    <Cards :cards="filteredCards" @card-clicked="handleCardClick" />
+
+    <!-- Paginator -->
+    <Paginator
+      :total-items="totalItems"
+      :items-per-page="itemsPerPage"
+      :current-page="currentPage"
+      @page-changed="fetchCards"
+    />
+
+    <!-- Modal for card details -->
+    <div v-if="selectedCard" class="modal-overlay" @click="closeModal">
+      <div class="modal" @click.stop>
+        <h3>Diák adatai</h3>
+        <p><strong>Név:</strong> {{ selectedCard.nev }}</p>
         <p><strong>Osztály:</strong> {{ selectedCard.osztalyNev }}</p>
         <button @click="closeModal">Bezárás</button>
       </div>
@@ -25,89 +34,109 @@
 </template>
 
 <script>
-import axios from 'axios';
-import Cards from '@/components/cards.vue';
-import Paginator from '@/components/paginator.vue';
+import Cards from "@/components/cards.vue";
+import Paginator from "@/components/paginator.vue";
+import axios from "axios";
 
 export default {
   components: {
     Cards,
-    Paginator
+    Paginator,
   },
   data() {
     return {
-      rows: [], // API-ból lekért diákok listája
-      currentPage: 1, // Aktuális oldal
-      itemsPerPage: 5, // Oldalonkénti diákok száma
-      selectedCard: null, // A kiválasztott diák adatainak tárolása
-      showModal: false // A modál láthatósága
+      cards: [],
+      totalItems: 0,
+      itemsPerPage: 10,
+      currentPage: 1,
+      selectedCard: null,
+      searchTerm: "",
     };
   },
-  mounted() {
-    this.getOsztalynevsor();  // Adatok betöltése komponens betöltésekor
+  computed: {
+    filteredCards() {
+      return this.cards.filter((card) =>
+        card.nev.toLowerCase().includes(this.searchTerm.toLowerCase())
+      );
+    },
   },
   methods: {
-    async getOsztalynevsor() {
-      try {
-        const apiUrl = 'http://localhost:8000/api/queryOsztalynevsor'; // API URL
-        const response = await axios.get(apiUrl); // Axios hívás
-        this.rows = response.data;  // Az API válasz tárolása
-      } catch (error) {
-        console.error('Hiba történt az adatok betöltése közben:', error);
-      }
+    fetchCards(page = 1) {
+      const apiUrl = `${this.$props.url}queryOsztalynevsor?page=${page}`;
+      axios
+        .get(apiUrl)
+        .then((response) => {
+          this.cards = response.data.data;
+          this.totalItems = response.data.total;
+          this.currentPage = response.data.current_page;
+        })
+        .catch((error) => {
+          console.error("Error fetching cards:", error);
+        });
     },
-    updatePage(newPage) {
-      this.currentPage = newPage; // Oldal frissítése
-    },
-    openModal(card) {
-      this.selectedCard = card; // A kiválasztott diák adatainak beállítása
-      this.showModal = true; // A modál megnyitása
+    handleCardClick(card) {
+      this.selectedCard = card;
     },
     closeModal() {
-      this.showModal = false; // A modál bezárása
-      this.selectedCard = null; // A kiválasztott adat törlése
-    }
+      this.selectedCard = null;
+    },
   },
-  computed: {
-    // Paginált adatok
-    paginatedRows() {
-      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-      return this.rows.slice(startIndex, startIndex + this.itemsPerPage);
-    }
-  }
+  mounted() {
+    this.fetchCards();
+  },
 };
 </script>
 
 <style scoped>
+.kartyak-view {
+  padding: 20px;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.modal-content {
-  background-color: white;
+.modal {
+  background: white;
   padding: 20px;
   border-radius: 8px;
-  width: 400px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 400px;
 }
 
-button {
-  padding: 8px 16px;
-  border: 1px solid #ccc;
-  background-color: #f4f4f4;
+.modal h3 {
+  margin-top: 0;
+}
+
+.modal button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
-  margin-top: 10px;
 }
 
-button:hover {
-  background-color: #ddd;
+.modal button:hover {
+  background-color: #0056b3;
 }
 </style>
