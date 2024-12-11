@@ -37,9 +37,9 @@ export default {
   },
   data() {
     return {
-      cards: [], 
+      cards: [], // Diákok listája
       currentPage: 1,
-      cardsPerPage: 10 
+      cardsPerPage: 10 // Alapértelmezett oldalszám
     };
   },
   computed: {
@@ -48,15 +48,15 @@ export default {
     }
   },
   mounted() {
-    this.getOsztalynevsor(); 
+    this.getOsztalynevsor(); // API hívás a diákok adatainak lekéréséhez
   },
   methods: {
     getOsztalynevsor() {
       axios
         .get(`${this.$root.url}queryOsztalynevsor`)
         .then((response) => {
-        
-          this.cards = response.data.data; 
+          // A válasz adatainak beállítása
+          this.cards = response.data.data; // A backend válaszából a data tömb
         })
         .catch((error) => {
           console.error('Hiba történt az API hívás során:', error);
@@ -66,7 +66,7 @@ export default {
       this.currentPage = newPage;
     },
     handleCardsPerPageChange() {
-      this.currentPage = 1; 
+      this.currentPage = 1; // Új lapozás kezdete
     }
   }
 };

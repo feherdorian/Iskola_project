@@ -1,22 +1,12 @@
 <template>
     <div class="cards-container">
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>Neve</th>
-            <th>Osztály</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="person in displayedCards" :key="person.nev">
-            <td>{{ person.nev }}</td>
-            <td>{{ person.osztalyNev || 'N/A' }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div v-for="card in paginatedCards" :key="card.nev" class="card">
+        <h3>{{ card.nev }}</h3>
+        <p>Osztály: {{ card.osztalyNev }}</p>
+      </div>
     </div>
   </template>
- 
+  
   <script>
   export default {
     props: {
@@ -30,33 +20,52 @@
       },
       cardsPerPage: {
         type: Number,
-        default: 10
+        required: true
       }
     },
     computed: {
-      totalPages() {
-        return Math.ceil(this.cards.length / this.cardsPerPage);
-      },
-      displayedCards() {
-        const startIndex = (this.currentPage - 1) * this.cardsPerPage;
-        const endIndex = startIndex + this.cardsPerPage;
-        return this.cards.slice(startIndex, endIndex);
+      paginatedCards() {
+        const start = (this.currentPage - 1) * this.cardsPerPage;
+        const end = start + this.cardsPerPage;
+        return this.cards.slice(start, end);
       }
     }
   };
   </script>
- <style scoped>
-.table {
-    width: 100%;
-    margin: 0 auto;
-    text-align: left;
-}
-
-.table th, table td {
-    padding: 10px;
+  
+  <style scoped>
+  .cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  .card {
     border: 1px solid #ccc;
-}
-
-
-
-</style>
+    border-radius: 10px;
+    padding: 15px;
+    width: 200px;
+    text-align: center;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  .card h3 {
+    margin-bottom: 10px;
+    font-size: 1.2em;
+  }
+  
+  .card p {
+    margin: 0;
+    font-size: 1em;
+    color: #555;
+  }
+  </style>
+  
