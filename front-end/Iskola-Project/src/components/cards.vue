@@ -16,7 +16,7 @@
       </table>
     </div>
   </template>
-  
+ 
   <script>
   export default {
     props: {
@@ -45,17 +45,18 @@
     }
   };
   </script>
-  
-  <style scoped>
-  .table {
+ <style scoped>
+.table {
     width: 100%;
     margin: 0 auto;
     text-align: left;
-  }
-  
-  .table th, .table td {
+}
+
+.table th, table td {
     padding: 10px;
     border: 1px solid #ccc;
-  }
-  </style>
-  
+}
+
+
+
+</style>
