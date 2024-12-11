@@ -1,142 +1,87 @@
 <template>
   <div class="kartyak-view">
-    <h2>Kártyák nézete</h2>
+    <h2>Kártyák</h2>
 
-    <!-- Search bar for filtering cards -->
-    <input
-      v-model="searchTerm"
-      type="text"
-      placeholder="Keresés..."
-      class="search-bar"
-    />
-
-    <!-- Display cards -->
-    <Cards :cards="filteredCards" @card-clicked="handleCardClick" />
-
-    <!-- Paginator -->
-    <Paginator
-      :total-items="totalItems"
-      :items-per-page="itemsPerPage"
-      :current-page="currentPage"
-      @page-changed="fetchCards"
-    />
-
-    <!-- Modal for card details -->
-    <div v-if="selectedCard" class="modal-overlay" @click="closeModal">
-      <div class="modal" @click.stop>
-        <h3>Diák adatai</h3>
-        <p><strong>Név:</strong> {{ selectedCard.nev }}</p>
-        <p><strong>Osztály:</strong> {{ selectedCard.osztalyNev }}</p>
-        <button @click="closeModal">Bezárás</button>
-      </div>
+    <div class="cards-per-page">
+      <label for="cardsPerPage">Kártyák oldalanként:</label>
+      <select v-model="cardsPerPage" @change="handleCardsPerPageChange">
+        <option v-for="option in [1, 2, 3, 5, 10, 25, 50, 100]" :key="option" :value="option">
+          {{ option }}
+        </option>
+      </select>
     </div>
+
+    <cards
+      :cards="cards"
+      :currentPage="currentPage"
+      :cardsPerPage="cardsPerPage"
+    />
+
+    <paginator
+      :currentPage="currentPage"
+      :totalPages="totalPages"
+      @page-changed="handlePageChange"
+    />
   </div>
 </template>
 
 <script>
-import Cards from "@/components/cards.vue";
-import Paginator from "@/components/paginator.vue";
-import axios from "axios";
+import Cards from '@/components/cards.vue';
+import Paginator from '@/components/paginator.vue';
+import axios from 'axios';
 
 export default {
   components: {
     Cards,
-    Paginator,
+    Paginator
   },
   data() {
     return {
-      cards: [],
-      totalItems: 0,
-      itemsPerPage: 10,
+      cards: [], // Diákok listája
       currentPage: 1,
-      selectedCard: null,
-      searchTerm: "",
+      cardsPerPage: 10 // Alapértelmezett oldalszám
     };
   },
   computed: {
-    filteredCards() {
-      return this.cards.filter((card) =>
-        card.nev.toLowerCase().includes(this.searchTerm.toLowerCase())
-      );
-    },
-  },
-  methods: {
-    fetchCards(page = 1) {
-      const apiUrl = `${this.$props.url}queryOsztalynevsor?page=${page}`;
-      axios
-        .get(apiUrl)
-        .then((response) => {
-          this.cards = response.data.data;
-          this.totalItems = response.data.total;
-          this.currentPage = response.data.current_page;
-        })
-        .catch((error) => {
-          console.error("Error fetching cards:", error);
-        });
-    },
-    handleCardClick(card) {
-      this.selectedCard = card;
-    },
-    closeModal() {
-      this.selectedCard = null;
-    },
+    totalPages() {
+      return Math.ceil(this.cards.length / this.cardsPerPage);
+    }
   },
   mounted() {
-    this.fetchCards();
+    this.getOsztalynevsor(); // API hívás a diákok adatainak lekéréséhez
   },
+  methods: {
+    getOsztalynevsor() {
+      axios
+        .get(`${this.$root.url}queryOsztalynevsor`)
+        .then((response) => {
+          // A válasz adatainak beállítása
+          this.cards = response.data.data; // A backend válaszából a data tömb
+        })
+        .catch((error) => {
+          console.error('Hiba történt az API hívás során:', error);
+        });
+    },
+    handlePageChange(newPage) {
+      this.currentPage = newPage;
+    },
+    handleCardsPerPageChange() {
+      this.currentPage = 1; // Új lapozás kezdete
+    }
+  }
 };
 </script>
 
 <style scoped>
 .kartyak-view {
-  padding: 20px;
+  text-align: center;
 }
 
-.search-bar {
-  width: 100%;
-  padding: 10px;
+.cards-per-page {
   margin-bottom: 20px;
-  font-size: 16px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
 }
 
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 90%;
-  max-width: 400px;
-}
-
-.modal h3 {
-  margin-top: 0;
-}
-
-.modal button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.modal button:hover {
-  background-color: #0056b3;
+.cards-per-page label {
+  margin-right: 10px;
 }
 </style>

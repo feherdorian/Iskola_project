@@ -1,49 +1,61 @@
 <template>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Diák Név</th>
-        <th>Osztály</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="(card, index) in cards" :key="index" @click="handleCardClick(card)">
-        <td>{{ card.nev }}</td>
-        <td>{{ card.osztalyNev }}</td>
-      </tr>
-    </tbody>
-  </table>
-</template>
-
-<script>
-export default {
-  props: {
-    cards: {
-      type: Array,
-      required: true,
+    <div class="cards-container">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Neve</th>
+            <th>Osztály</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="person in displayedCards" :key="person.nev">
+            <td>{{ person.nev }}</td>
+            <td>{{ person.osztalyNev || 'N/A' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </template>
+  
+  <script>
+  export default {
+    props: {
+      cards: {
+        type: Array,
+        required: true
+      },
+      currentPage: {
+        type: Number,
+        required: true
+      },
+      cardsPerPage: {
+        type: Number,
+        default: 10
+      }
     },
-  },
-  methods: {
-    handleCardClick(card) {
-      this.$emit("card-clicked", card);
-    },
-  },
-};
-</script>
-
-<style scoped>
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-th, td {
-  padding: 12px;
-  border: 1px solid #ddd;
-  text-align: left;
-}
-tr:hover {
-  background-color: #f4f4f4;
-  cursor: pointer;
-}
-</style>
+    computed: {
+      totalPages() {
+        return Math.ceil(this.cards.length / this.cardsPerPage);
+      },
+      displayedCards() {
+        const startIndex = (this.currentPage - 1) * this.cardsPerPage;
+        const endIndex = startIndex + this.cardsPerPage;
+        return this.cards.slice(startIndex, endIndex);
+      }
+    }
+  };
+  </script>
+  
+  <style scoped>
+  .table {
+    width: 100%;
+    margin: 0 auto;
+    text-align: left;
+  }
+  
+  .table th, .table td {
+    padding: 10px;
+    border: 1px solid #ccc;
+  }
+  </style>
+  
