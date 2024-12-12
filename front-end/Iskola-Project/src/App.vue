@@ -4,7 +4,7 @@ import { RouterLink, RouterView } from 'vue-router';
 export default {
   data() {
     return {
-      url: 'http://localhost:8000/api/', // Backend URL
+      url: 'http://localhost:8000/api', // Backend URL
     };
   },
 };

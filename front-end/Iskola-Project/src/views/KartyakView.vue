@@ -2,19 +2,9 @@
   <div class="kartyak-view">
     <h2>Kártyák</h2>
 
-    <div class="cards-per-page">
-      <label for="cardsPerPage">Kártyák oldalanként:</label>
-      <select v-model="cardsPerPage" @change="handleCardsPerPageChange">
-        <option v-for="option in [1, 2, 3, 5, 10, 25, 50, 100]" :key="option" :value="option">
-          {{ option }}
-        </option>
-      </select>
-    </div>
-
+   
     <cards
       :cards="cards"
-      :currentPage="currentPage"
-      :cardsPerPage="cardsPerPage"
     />
 
     <paginator
@@ -35,38 +25,25 @@ export default {
     Cards,
     Paginator
   },
+  props: ["url"],
   data() {
     return {
       cards: [], // Diákok listája
-      currentPage: 1,
-      cardsPerPage: 10 // Alapértelmezett oldalszám
+      currentPage: 1, // melyik oldalon vagyunk
+      cardsPerPage: 3 // Egy oldalon hány kártya jelenik meg
     };
   },
-  computed: {
-    totalPages() {
-      return Math.ceil(this.cards.length / this.cardsPerPage);
-    }
-  },
+ 
   mounted() {
     this.getOsztalynevsor(); // API hívás a diákok adatainak lekéréséhez
   },
   methods: {
-    getOsztalynevsor() {
-      axios
-        .get(`${this.$root.url}queryOsztalynevsor`)
-        .then((response) => {
-          // A válasz adatainak beállítása
-          this.cards = response.data.data; // A backend válaszából a data tömb
-        })
-        .catch((error) => {
-          console.error('Hiba történt az API hívás során:', error);
-        });
-    },
-    handlePageChange(newPage) {
-      this.currentPage = newPage;
-    },
-    handleCardsPerPageChange() {
-      this.currentPage = 1; // Új lapozás kezdete
+     async getOsztalynevsor() {
+      const url = `${this.url}/queryOsztalynevsorLimit/${this.currentPage}/${this.cardsPerPage}`
+     const response = await axios.get(url);
+      this.cards = response.data.data; 
+      console.log(this.cards);
+      // A backend válaszából a data tömb
     }
   }
 };
