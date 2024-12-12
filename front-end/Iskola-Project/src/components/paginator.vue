@@ -3,40 +3,24 @@
       <ul class="pagination">
         <!-- Previous gomb -->
         <li class="page-item">
-          <a 
-            class="page-link" 
-            href="#" 
-            @click.prevent="changePage(currentPage - 1)" 
-            :class="{ disabled: currentPage === 1 }"
-          >
+          <a class="page-link" href="#" @click.prevent="changePage(currentPage - 1)"
+            :class="{ disabled: currentPage === 1 }">
             Previous
           </a>
         </li>
   
         <!-- Oldalszámok -->
-        <li 
-          class="page-item" 
-          v-for="page in totalPages" 
-          :key="page"
-        >
-          <a 
-            class="page-link" 
-            href="#" 
-            @click.prevent="changePage(page)" 
-            :class="{ active: currentPage === page }"
-          >
+        <li class="page-item" v-for="page in totalPages" :key="page">
+          <a class="page-link" href="#" @click.prevent="changePage(page)"
+            :class="{ active: currentPage === page }">
             {{ page }}
           </a>
         </li>
   
         <!-- Next gomb -->
         <li class="page-item">
-          <a 
-            class="page-link" 
-            href="#" 
-            @click.prevent="changePage(currentPage + 1)" 
-            :class="{ disabled: currentPage === totalPages }"
-          >
+          <a class="page-link" href="#" @click.prevent="changePage(currentPage + 1)"
+            :class="{ disabled: currentPage === totalPages }">
             Next
           </a>
         </li>
@@ -66,6 +50,7 @@
     pointer-events: none;
     opacity: 0.5;
   }
+  
   .pagination .page-item.active .page-link {
     font-weight: bold;
     background-color: #007bff;
