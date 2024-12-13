@@ -48,12 +48,11 @@ export default {
     this.getTotalPages();  // Adatok lekérése az API-ból
   },
   watch: {
-    // Az oldalméret frissítése, ha a select változik
-    cardsPerPage() {
-      this.currentPage = 1;
-      this.getOsztalynevsor(); // Az új oldalszám alapján frissítjük az adatokat
-      this.getTotalPages(); // Adatok lekéréséhez
-    },
+  async cardsPerPage() {
+    await this.getTotalPages(); // Összes oldalak számának frissítése
+    await this.getOsztalynevsor(); // Frissített kártyaadatok lekérése
+    this.currentPage = Math.min(this.currentPage, this.totalPages); // Az aktuális oldalt az érvényes tartományban tartja
+  }
   },
   methods: {
     // API hívás a kártyák adatainak lekéréséhez
@@ -66,8 +65,6 @@ export default {
 
 
     // Lapozás kezelése
-
-
     async getTotalPages() {
       const url = `${this.url}/queryHanyOldalVan/${this.cardsPerPage}`;
       const response = await axios.get(url);
