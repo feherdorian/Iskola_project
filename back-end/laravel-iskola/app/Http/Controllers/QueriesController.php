@@ -79,25 +79,32 @@ class QueriesController extends Controller
     }
 
     public function queryDiakKeres(string $nev){
-        // return response()->json($nev, options:JSON_UNESCAPED_UNICODE);
-        // $query = '
-        //     SELECT * FROM diaks
-        //     WHERE nev = "'.$nev.'"';
-        // $rows= DB::select($query);
-         $query = '
+        $query = '
         SELECT * FROM diaks
-        WHERE nev = ?
+        WHERE nev = "'.$nev.'"';
+    $rows = DB::select($query);
+
+    $data = [
+        'message' => 'ok',
+        'data' => $rows,
+        'sql' =>  $query
+    ];
+
+    return response()->json($data, options: JSON_UNESCAPED_UNICODE);
+        //  $query = '
+        // SELECT * FROM diaks
+        // WHERE nev = ?
         
-        ';
-        $rows= DB::select($query,[$nev]);
-        $data = [
-            'message' => 'ok',
-            'data' => $rows,
-            'sql' =>  $query
-        ];
+        // ';
+        // $rows= DB::select($query,[$nev]);
+        // $data = [
+        //     'message' => 'ok',
+        //     'data' => $rows,
+        //     'sql' =>  $query
+        // ];
 
         
-        return response()->json($data, options:JSON_UNESCAPED_UNICODE);
+        // return response()->json($data, options:JSON_UNESCAPED_UNICODE);
     }
     
 }

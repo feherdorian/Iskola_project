@@ -15,7 +15,8 @@ export default {
     <h1>Iskola</h1>
     <nav class="my-border p-4">
       <RouterLink to="/">Home</RouterLink> |
-      <RouterLink to="/kartyak">Kártyák</RouterLink> <!-- Kártyák link -->
+      <RouterLink to="/kartyak">Kártyák</RouterLink> |
+      <RouterLink to="/kereso">Kereső</RouterLink> <!-- Kártyák link -->
     </nav>
     <div class="my-border p-2">
       <!-- A megjelenítendő oldalak -->

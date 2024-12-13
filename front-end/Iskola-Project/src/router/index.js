@@ -13,6 +13,11 @@ const router = createRouter({
       path: '/kartyak',
       name: 'kartyak',
       component: () => import('../views/KartyakView.vue')
+    },
+    {
+      path: '/kereso',
+      name: 'kereso',
+      component: () => import('../views/KeresoView.vue')
     }
   ]
 })
