@@ -48,11 +48,14 @@ export default {
     this.getTotalPages();  // Adatok lekérése az API-ból
   },
   watch: {
-  async cardsPerPage() {
-    await this.getTotalPages(); // Összes oldalak számának frissítése
-    await this.getOsztalynevsor(); // Frissített kártyaadatok lekérése
-    this.currentPage = Math.min(this.currentPage, this.totalPages); // Az aktuális oldalt az érvényes tartományban tartja
-  }
+    async cardsPerPage() {
+      await this.getTotalPages(); // Összes oldalak számának frissítése
+      await this.getOsztalynevsor(); // Frissített kártyaadatok lekérése
+      this.currentPage = Math.min(this.currentPage, this.totalPages); // Az aktuális oldalt az érvényes tartományban tartja
+    },
+    async currentPage(){
+      await this.getOsztalynevsor();
+    }
   },
   methods: {
     // API hívás a kártyák adatainak lekéréséhez
