@@ -1,31 +1,29 @@
 <template>
-  <div class="kartyak-view">
-    <h2>Kártyák</h2>
-
-    <!-- Header: Kártyák és oldalméret beállítás -->
-    <div class="d-flex justify-content-between mb-3">
+  <div class="d-flex flex-column container-fluid">
+    <div class="d-flex justify-content-center mb-3">
       <h2>Kártyák</h2>
-      <div>
-        <div class="dropdown">
-          Kártyák per oldal:
-          <select class="form-select" v-model="cardsPerPage" @change="updateCardsPerPage">
-            <option value="1">1</option>
-            <option value="3">3</option>
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="100">100</option>
-          </select>
-        </div>
+      <div class="dropdown d-flex align-items-center">
+        Kártyák per oldal:
+        <select class="form-select" v-model="cardsPerPage" @change="updateCardsPerPage">
+          <option value="1">1</option>
+          <option value="3">3</option>
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="100">100</option>
+        </select>
       </div>
     </div>
 
     <!-- Kártyák megjelenítése -->
-    <cards :cards="cards" />
+    <div class="my-cards-height overflow-auto">
+      <cards :cards="cards" />
+    </div>
 
     <!-- Lapozó komponens -->
     <paginator :currentPage="currentPage" :totalPages="totalPages" @page-changed="handlePageChange" />
   </div>
+
 </template>
 
 <script>
@@ -80,22 +78,14 @@ export default {
 
     handlePageChange(page) {
       this.currentPage = page;
-      this.cards();
+      this.getOsztalynevsor();
     }
   }
 };
 </script>
 
 <style scoped>
-.kartyak-view {
-  text-align: center;
-}
-
-.cards-per-page {
-  margin-bottom: 20px;
-}
-
-.cards-per-page label {
-  margin-right: 10px;
+.my-cards-height {
+  height: calc(100vh - 300px);
 }
 </style>

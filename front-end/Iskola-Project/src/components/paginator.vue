@@ -1,6 +1,6 @@
 <template>
   <nav aria-label="Page navigation example">
-    <ul class="pagination">
+    <ul class="pagination justify-content-center">
       <!-- Previous gomb -->
       <li class="page-item">
         <a class="page-link" href="#" @click="Prev()"
@@ -55,14 +55,5 @@ export default {
 </script>
 
 <style scoped>
-.pagination .page-item.disabled .page-link {
-  pointer-events: none;
-  opacity: 0.5;
-}
 
-.pagination .page-item.active .page-link {
-  font-weight: bold;
-  background-color: #007bff;
-  color: white;
-}
 </style>
