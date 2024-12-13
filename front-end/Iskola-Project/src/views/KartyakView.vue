@@ -1,29 +1,26 @@
 <template>
-  <div class="d-flex flex-column container-fluid">
-    <div class="d-flex justify-content-center mb-3">
+  <div class="d-flex flex-column container-flud my-border">
+    <div class="d-flex justify-content-between mb-3 my-border">
+      <!-- fej -->
       <h2>Kártyák</h2>
       <div class="dropdown d-flex align-items-center">
-        Kártyák per oldal:
-        <select class="form-select" v-model="cardsPerPage" @change="updateCardsPerPage">
-          <option value="1">1</option>
-          <option value="3">3</option>
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="25">25</option>
-          <option value="100">100</option>
+        <span class="me-2"> kártya/odal: </span>
+        <select class="form-select" aria-label="Default select example" v-model="cardsPerPage">
+          <option v-for="cardsNumber of cardsPerPageList" :key="cardsNumber" :value="cardsNumber">
+            {{ cardsNumber }}
+          </option>
         </select>
       </div>
     </div>
 
-    <!-- Kártyák megjelenítése -->
-    <div class="my-cards-height overflow-auto">
-      <cards :cards="cards" />
+    <!-- kártyák -->
+    <div class="my-cards-height overflow-auto my-border">
+      <Cards :cards="cards" />
     </div>
 
-    <!-- Lapozó komponens -->
-    <paginator :currentPage="currentPage" :totalPages="totalPages" @page-changed="handlePageChange" />
+    <!-- paginátor -->
+    <Paginator :currentPage="currentPage" :totalPages="totalPages" @page-changed="handlePageChange" />
   </div>
-
 </template>
 
 <script>
@@ -42,7 +39,8 @@ export default {
       cards: [], // Diákok listája
       currentPage: 1, // Aktuális oldal
       totalPages: 1, // Összes oldal
-      cardsPerPage: 1 // Egy oldalon hány kártya jelenik meg
+      cardsPerPage: 1, // Egy oldalon hány kártya jelenik meg
+      cardsPerPageList: [1, 3, 5, 10, 50, 100]
     };
   },
   mounted() {
