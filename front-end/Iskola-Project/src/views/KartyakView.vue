@@ -2,17 +2,13 @@
   <div class="kartyak-view">
     <h2>Kártyák</h2>
 
-        <!-- Header: Kártyák és oldalméret beállítás -->
+    <!-- Header: Kártyák és oldalméret beállítás -->
     <div class="d-flex justify-content-between mb-3">
       <h2>Kártyák</h2>
       <div>
         <div class="dropdown">
           Kártyák per oldal:
-          <select
-            class="form-select"
-            v-model="cardsPerPage"
-            @change="updateCardsPerPage"
-          >
+          <select class="form-select" v-model="cardsPerPage" @change="updateCardsPerPage">
             <option value="1">1</option>
             <option value="3">3</option>
             <option value="5">5</option>
@@ -28,11 +24,7 @@
     <cards :cards="cards" />
 
     <!-- Lapozó komponens -->
-    <paginator
-      :currentPage="currentPage"
-      :totalPages="totalPages"
-      @page-changed="handlePageChange"
-    />
+    <paginator :currentPage="currentPage" :totalPages="totalPages" @page-changed="handlePageChange" />
   </div>
 </template>
 
@@ -56,7 +48,16 @@ export default {
     };
   },
   mounted() {
-    this.getOsztalynevsor(); // Adatok lekérése az API-ból
+    this.getOsztalynevsor();
+    this.getTotalPages();  // Adatok lekérése az API-ból
+  },
+  watch: {
+    // Az oldalméret frissítése, ha a select változik
+    cardsPerPage() {
+      this.currentPage = 1;
+      this.getOsztalynevsor(); // Az új oldalszám alapján frissítjük az adatokat
+      this.getTotalPages(); // Adatok lekéréséhez
+    },
   },
   methods: {
     // API hívás a kártyák adatainak lekéréséhez
@@ -64,19 +65,22 @@ export default {
       const url = `${this.url}/queryOsztalynevsorLimit/${this.currentPage}/${this.cardsPerPage}`;
       const response = await axios.get(url);
       this.cards = response.data.data; // Adatok beállítása
-      this.totalPages = Math.ceil(response.data.total / this.cardsPerPage); // Összes oldal kiszámítása
     },
 
-     // Az oldalméret frissítése, ha a select változik
-     updateCardsPerPage() {
-      this.currentPage = 1; // Visszaállítjuk az első oldalra
-      this.getOsztalynevsor(); // Új oldalméret alapján új adatok lekérése
-    },
+
 
     // Lapozás kezelése
-    handlePageChange(newPage) {
-      this.currentPage = newPage;
-      this.getOsztalynevsor(); // Az új oldalszám alapján frissítjük az adatokat
+
+
+    async getTotalPages() {
+      const url = `${this.url}/queryHanyOldalVan/${this.cardsPerPage}`;
+      const response = await axios.get(url);
+      this.totalPages = response.data.data.oldalszam; // Adatok beállítása
+    },
+
+    handlePageChange(page) {
+      this.currentPage = page;
+      this.cards();
     }
   }
 };
